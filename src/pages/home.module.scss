@@ -5,6 +5,10 @@
     padding: 0 2rem;
 }
 
+.header {
+    margin: 5rem 0;
+}
+
 .posts {
     margin: 5rem auto 4rem auto;
     display: flex;
@@ -49,7 +53,7 @@
     }
 }
 
-.loadMorePostsButton {
+.nextPageButton {
     background: none;
     border: none;
     color: var(--pink-500);
