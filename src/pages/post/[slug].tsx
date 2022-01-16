@@ -16,6 +16,7 @@ import { FiUser } from 'react-icons/fi';
 import { BiTimeFive } from 'react-icons/bi';
 
 import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { getPrismicClient } from '../../services/prismic';
 
 import Header from '../../components/Header';
@@ -42,9 +43,24 @@ interface Post {
 
 interface PostProps {
   post: Post;
+  preview: boolean;
+  navigation: {
+    prevPost: {
+      uid: string;
+      data: {
+        title: string;
+      };
+    }[];
+    nextPost: {
+      uid: string;
+      data: {
+        title: string;
+      };
+    }[];
+  };
 }
 
-export default function Post({ post }: PostProps) {
+export default function Post({ post, preview, navigation }: PostProps) {
   const router = useRouter();
 
   if (router.isFallback) {
@@ -113,8 +129,35 @@ export default function Post({ post }: PostProps) {
         </div>
 
         <footer className={styles.footer}>
-          {/* <div className={styles.divider} /> */}
+          <div className={styles.divider} />
+          <div className={styles.navigation}>
+            {navigation?.prevPost.length > 0 && (
+              <Link href={`/post/${navigation?.prevPost[0].uid}`}>
+                <a className={styles.prevPost}>
+                  <span>{navigation?.prevPost[0].data.title[0].text}</span>
+                  <strong>Post anterior</strong>
+                </a>
+              </Link>
+            )}
+            {navigation?.nextPost.length > 0 && (
+              <Link href={`/post/${navigation?.nextPost[0].uid}`}>
+                <a className={styles.nextPost}>
+                  <span>{navigation?.nextPost[0].data.title[0].text}</span>
+                  <strong>Próximo post</strong>
+                </a>
+              </Link>
+            )}
+          </div>
+
           {UtterancComments()}
+
+          {preview && (
+            <aside className={styles.exitPreviewMode}>
+              <Link href="/api/exit-preview">
+                <a>Sair do modo Preview</a>
+              </Link>
+            </aside>
+          )}
         </footer>
       </div>
     </>
@@ -141,7 +184,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
   };
 };
 
-export const getStaticProps: GetStaticProps = async ({ params }) => {
+export const getStaticProps: GetStaticProps = async ({
+  params,
+  preview = false,
+  previewData,
+}) => {
   const prismic = getPrismicClient();
 
   const { slug } = params;
@@ -150,9 +197,32 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     fetch: ['posts.title', 'posts.banner', 'posts.author', 'posts.content'],
   });
 
+  const prevPost = await prismic.query(
+    [Prismic.Predicates.at('document.type', 'posts')],
+    {
+      after: response.id,
+      pageSize: 1,
+      orderings: '[document.first_publication_date]',
+    }
+  );
+
+  const nextPost = await prismic.query(
+    [Prismic.Predicates.at('document.type', 'posts')],
+    {
+      after: response.id,
+      pageSize: 1,
+      orderings: '[document.first_publication_date desc]',
+    }
+  );
+
   return {
     props: {
       post: response,
+      preview,
+      navigation: {
+        prevPost: prevPost?.results,
+        nextPost: nextPost?.results,
+      },
     },
     revalidate: 60 * 30, // 30 minutes
   };

@@ -57,3 +57,41 @@
         }
     }
 }
+
+.footer {
+    max-width: 1120px;
+    margin: 5rem auto 4rem auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4rem;
+    .divider {
+        background-color: var(--gray-100);
+        width: 100%;
+        height: 1px;
+    }
+    .navigation {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        .prevPost,
+        .nextPost {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1rem;
+            span {
+                font-size: 1.125rem;
+                color: var(--gray-50);
+            }
+            strong {
+                color: var(--pink-500);
+                font-size: 1rem;
+                font-weight: 700;
+            }
+        }
+        .nextPost {
+            align-items: flex-end;
+        }
+    }
+}
