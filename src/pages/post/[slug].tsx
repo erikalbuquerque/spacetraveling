@@ -12,7 +12,7 @@ import { RichText } from 'prismic-dom';
 import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 
-import { FiUser } from 'react-icons/fi';
+import { FiUser, FiCalendar } from 'react-icons/fi';
 import { BiTimeFive } from 'react-icons/bi';
 
 import { useRouter } from 'next/router';
@@ -26,6 +26,7 @@ import styles from './post.module.scss';
 
 interface Post {
   first_publication_date: string | null;
+  last_publication_date: string | null;
   data: {
     title: string;
     banner: {
@@ -111,7 +112,10 @@ export default function Post({ post, preview, navigation }: PostProps) {
         <div className={styles.post}>
           <h1>{post.data.title[0].text}</h1>
           <div className={styles.header}>
-            <time>{formateDate(post.first_publication_date)}</time>
+            <span>
+              <FiCalendar color="#BBBBBB" />
+              <time>{formateDate(post.first_publication_date)}</time>
+            </span>
             <span>
               <FiUser color="#BBBBBB" />
               {post.data.author[0].text}
@@ -120,6 +124,19 @@ export default function Post({ post, preview, navigation }: PostProps) {
               <BiTimeFive color="#BBBBBB" />4 min
             </span>
           </div>
+          {post.first_publication_date !== post.last_publication_date && (
+            <div>
+              * editado em
+              {format(
+                new Date(post.last_publication_date),
+                " dd MMM yyyy', às' HH:mm",
+                {
+                  locale: ptBR,
+                }
+              )}
+            </div>
+          )}
+
           <div
             className={styles.postContent}
             dangerouslySetInnerHTML={{
