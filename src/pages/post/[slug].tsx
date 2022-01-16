@@ -85,6 +85,15 @@ export default function Post({ post, preview, navigation }: PostProps) {
     })
     .join('');
 
+  const readingTime = post.data.content.reduce((acc, content) => {
+    const textBody = RichText.asText(content.body);
+    const split = textBody.split(' ');
+    const numberWords = split.length;
+
+    const result = Math.ceil(numberWords / 200);
+    return acc + result;
+  }, 0);
+
   function UtterancComments() {
     return (
       <div
@@ -121,7 +130,7 @@ export default function Post({ post, preview, navigation }: PostProps) {
               {post.data.author[0].text}
             </span>
             <span>
-              <BiTimeFive color="#BBBBBB" />4 min
+              <BiTimeFive color="#BBBBBB" /> {readingTime} min
             </span>
           </div>
           {post.first_publication_date !== post.last_publication_date && (
