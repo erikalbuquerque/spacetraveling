@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable react/no-danger */
+
 import { GetStaticPaths, GetStaticProps } from 'next';
 
 import Prismic from '@prismicio/client';
@@ -66,18 +68,37 @@ export default function Post({ post }: PostProps) {
     })
     .join('');
 
+  function UtterancComments() {
+    return (
+      <div
+        ref={element => {
+          if (!element) return;
+
+          const script = document.createElement('script');
+          script.setAttribute('src', 'https://utteranc.es/client.js');
+          script.setAttribute('repo', 'erikalbuquerque/spacetraveling');
+          script.setAttribute('issue-term', 'pathname');
+          script.setAttribute('theme', 'github-dark');
+          script.setAttribute('crossorigin', 'anonymous');
+          script.setAttribute('async', 'true');
+          element.replaceChildren(script);
+        }}
+      />
+    );
+  }
+
   return (
     <>
       <Header className={styles.header} />
       <div className={styles.container}>
         <img src={post.data.banner.url} alt="" />
         <div className={styles.post}>
-          <h1>{post.data.title}</h1>
+          <h1>{post.data.title[0].text}</h1>
           <div className={styles.header}>
             <time>{formateDate(post.first_publication_date)}</time>
             <span>
               <FiUser color="#BBBBBB" />
-              {post.data.author}
+              {post.data.author[0].text}
             </span>
             <span>
               <BiTimeFive color="#BBBBBB" />4 min
@@ -90,6 +111,11 @@ export default function Post({ post }: PostProps) {
             }}
           />
         </div>
+
+        <footer className={styles.footer}>
+          {/* <div className={styles.divider} /> */}
+          {UtterancComments()}
+        </footer>
       </div>
     </>
   );

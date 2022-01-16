@@ -70,8 +70,8 @@ export default function Home({ postsPagination }: HomeProps) {
           {posts.map(post => (
             <Link key={post.uid} href={`/post/${post.uid}`}>
               <a>
-                <strong>{post.data.title}</strong>
-                <p>{post.data.subtitle}</p>
+                <strong>{post.data.title[0].text}</strong>
+                <p>{post.data.subtitle[0].text}</p>
                 <div className={styles.info}>
                   <time>
                     <FiCalendar color="#BBBBBB" />
@@ -79,7 +79,7 @@ export default function Home({ postsPagination }: HomeProps) {
                   </time>
                   <span>
                     <FiUser color="#BBBBBB" />
-                    {post.data.author}
+                    {post.data.author[0].text}
                   </span>
                 </div>
               </a>
